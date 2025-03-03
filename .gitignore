@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+
+# Project specific
+data/test_outputs/*
+!data/test_outputs/.gitkeep
+models/*
+!models/.gitkeep
+
+# Environment variables
+.env
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# OpenAI API key
+openai_api_key.txt

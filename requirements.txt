@@ -1,0 +1,27 @@
+# Core dependencies
+torch==2.2.0
+torchaudio==2.2.0
+transformers==4.39.0
+onnx==1.15.0
+onnxruntime>=1.17.0  # Use latest available version
+
+# Audio processing
+librosa==0.10.1
+soundfile==0.12.1
+# Using latest compatible sounddevice instead of 0.4.6
+sounddevice>=0.4.6  
+
+# TTS - Using Coqui TTS with proper import name
+coqui-tts>=0.21.0,<0.22.0  # Previously listed as TTS
+
+# Model optimization
+optimum==1.16.1
+
+# Web and UI
+flask==2.3.3
+streamlit==1.29.0
+
+# Utilities
+tqdm==4.66.1
+matplotlib==3.8.2
+pandas==2.1.4
