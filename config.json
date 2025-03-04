@@ -1,0 +1,31 @@
+{
+    "models": {
+    "whisper": {
+      "model_id": "openai/whisper-tiny",
+      "use_onnx": false,
+      "use_int8": false
+    },
+    "tts": {
+      "voice": "Samantha",
+      "rate": 170
+    },
+    "llm": {
+      "use_mock": false,
+      "use_ollama": true,
+      "model_name": "llama3.2:latest",
+      "temperature": 0.7,
+      "max_tokens": 150,
+      "system_prompt": "You are a helpful voice assistant that provides concise and informative responses. Keep your answers brief but accurate, with no more than 3 sentences unless absolutely necessary. Be friendly and conversational."
+    }
+  },
+    "api": {
+      "host": "0.0.0.0",
+      "port": 5050,
+      "debug": true
+    },
+    "ui": {
+      "title": "Speech Assistant",
+      "theme": "light",
+      "recording_duration": 5
+    }
+  }
