@@ -13,17 +13,16 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
+import sys
 
-# Load configuration
-config_path = Path(__file__).parent.parent / "config.json"
-if config_path.exists():
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-else:
-    config = {
-        "api": {"host": "localhost", "port": 5050},
-        "ui": {"title": "Speech Assistant", "theme": "light", "recording_duration": 5}
-    }
+# Add the project root to the Python path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Import utilities
+from src.utils.env_loader import load_config_with_env_override
+
+# Load configuration with environment variable overrides
+config = load_config_with_env_override()
 
 # Configure API URL
 API_HOST = config["api"].get("host", "localhost")
@@ -291,12 +290,14 @@ def display_metrics(timings):
     st.markdown('</div>', unsafe_allow_html=True)
 
 def check_api_status():
-    """Check if the API is available."""
+    """Check if the API is available and return component status."""
     try:
-        response = requests.get(f"{API_URL}/")
-        return response.status_code == 200
-    except:
-        return False
+        response = requests.get(f"{API_URL}/health", timeout=2)
+        if response.status_code == 200:
+            return response.json()
+        return {"status": "error", "message": f"API returned status code {response.status_code}"}
+    except requests.exceptions.RequestException as e:
+        return {"status": "error", "message": f"Could not connect to API: {str(e)}"}
 
 # Main App
 
@@ -306,8 +307,22 @@ st.markdown("An efficient speech recognition and text-to-speech system with LLM 
 
 # Check API status
 api_status = check_api_status()
-if not api_status:
-    st.error(f"⚠️ Cannot connect to the API at {API_URL}. Make sure the server is running.")
+
+# Display API status
+if api_status.get("status") == "ok":
+    st.sidebar.success("✅ API Connected")
+    
+    # Show component status
+    components = api_status.get("components", {})
+    st.sidebar.markdown("### Components")
+    for component, status in components.items():
+        if status == "available":
+            st.sidebar.markdown(f"- ✅ {component.upper()}")
+        else:
+            st.sidebar.markdown(f"- ❌ {component.upper()}")
+else:
+    st.sidebar.error(f"❌ API Not Connected: {api_status.get('message', 'Unknown error')}")
+    st.error("Cannot connect to the API. Please make sure the API server is running.")
     st.stop()
 
 # Sidebar
@@ -753,3 +768,12 @@ with tab3:
 # Footer
 st.markdown("---")
 st.caption("Speech Assistant | Efficient Edge AI Deployment")
+
+def main():
+    """Run the Streamlit application."""
+    # The Streamlit app is defined at the module level,
+    # so we don't need to do anything here.
+    pass
+
+if __name__ == "__main__":
+    main()

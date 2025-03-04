@@ -24,38 +24,12 @@ from src.stt.whisper_direct import WhisperDirect
 from src.tts.mac_tts import MacTTS
 from src.assistant.enhanced_speech_assistant import EnhancedSpeechAssistant
 from src.assistant.llm_response_generator import get_response_generator
+from src.utils.env_loader import load_config_with_env_override
 
 app = Flask(__name__)
 
-# Load configuration
-config_path = PROJECT_ROOT / "config.json"
-if config_path.exists():
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-else:
-    # Default configuration
-    config = {
-        "models": {
-            "whisper": {
-                "model_id": "openai/whisper-tiny",
-                "use_onnx": False
-            },
-            "tts": {
-                "voice": "Samantha"
-            },
-            "llm": {
-                "use_mock": False,
-                "model": "gpt-3.5-turbo",
-                "temperature": 0.7,
-                "max_tokens": 150
-            }
-        },
-        "api": {
-            "host": "0.0.0.0",
-            "port": 5050,
-            "debug": True
-        }
-    }
+# Load configuration with environment variable overrides
+config = load_config_with_env_override()
 
 # Initialize models and assistant
 print("Initializing models...")
@@ -93,9 +67,19 @@ try:
     tts_model = MacTTS(tts_config.get("voice", "Samantha"))
     print(f"Using macOS TTS engine with voice: {tts_config.get('voice', 'Samantha')}")
 except Exception as e:
-    print(f"Error initializing TTS: {e}")
-    print(traceback.format_exc())
-    tts_model = None
+    print(f"Error initializing MacTTS: {e}")
+    print("Falling back to cross-platform TTS...")
+    try:
+        from src.tts.cross_platform_tts import CrossPlatformTTS
+        tts_model = CrossPlatformTTS(
+            voice=tts_config.get("voice"),
+            rate=tts_config.get("rate", 170)
+        )
+        print(f"Using cross-platform TTS engine")
+    except Exception as fallback_error:
+        print(f"Error initializing cross-platform TTS: {fallback_error}")
+        print(traceback.format_exc())
+        tts_model = None
 
 # Initialize LLM response generator
 try:
@@ -110,70 +94,45 @@ except Exception as e:
     print(traceback.format_exc())
     response_generator = None
 
-# Initialize assistant if models are available
+# Initialize assistant
 if whisper_model and tts_model:
-    assistant = EnhancedSpeechAssistant(whisper_model, tts_model, response_generator)
-    print("Enhanced speech assistant initialized")
+    assistant = EnhancedSpeechAssistant(whisper_model, tts_model, response_generator, config)
+    print("Speech assistant initialized")
 else:
     assistant = None
-    print("Warning: Speech assistant not initialized due to missing models")
+    print("Speech assistant not initialized due to missing components")
 
+# API routes
 @app.route('/')
 def index():
-    """Home page."""
-    return '''
-    <html>
-        <head>
-            <title>Enhanced Speech Assistant API</title>
-            <style>
-                body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-                h1 { color: #333; }
-                .endpoint { margin-bottom: 20px; padding: 10px; background-color: #f5f5f5; border-radius: 5px; }
-                code { background-color: #eee; padding: 2px 4px; border-radius: 3px; }
-            </style>
-        </head>
-        <body>
-            <h1>Enhanced Speech Assistant API</h1>
-            
-            <div class="endpoint">
-                <h2>POST /transcribe</h2>
-                <p>Upload an audio file to transcribe speech to text.</p>
-                <form action="/transcribe" method="post" enctype="multipart/form-data">
-                    <input type="file" name="audio">
-                    <button type="submit">Transcribe</button>
-                </form>
-            </div>
-            
-            <div class="endpoint">
-                <h2>POST /synthesize</h2>
-                <p>Convert text to speech.</p>
-                <form action="/synthesize" method="post">
-                    <textarea name="text" rows="4" cols="50">Hello, this is a test of the speech synthesis system.</textarea>
-                    <button type="submit">Synthesize</button>
-                </form>
-            </div>
-            
-            <div class="endpoint">
-                <h2>POST /assistant</h2>
-                <p>Process a request through the speech assistant with LLM integration.</p>
-                <form action="/assistant" method="post" enctype="multipart/form-data">
-                    <input type="file" name="audio">
-                    <button type="submit">Process with Assistant</button>
-                </form>
-            </div>
-            
-            <div class="endpoint">
-                <h2>Status</h2>
-                <p>
-                    Whisper model: <strong>''' + ("Loaded" if whisper_model else "Not loaded") + '''</strong><br>
-                    TTS model: <strong>''' + ("Loaded" if tts_model else "Not loaded") + '''</strong><br>
-                    LLM integration: <strong>''' + ("Available" if response_generator else "Not available") + '''</strong><br>
-                    Assistant: <strong>''' + ("Ready" if assistant else "Not available") + '''</strong>
-                </p>
-            </div>
-        </body>
-    </html>
-    '''
+    """Root endpoint."""
+    return jsonify({
+        "name": "Enhanced Speech Assistant API",
+        "version": "0.1.0",
+        "status": "running",
+        "endpoints": [
+            "/transcribe",
+            "/synthesize",
+            "/process_audio",
+            "/assistant",
+            "/health"
+        ]
+    })
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    status = {
+        "status": "ok",
+        "timestamp": time.time(),
+        "components": {
+            "whisper": "available" if whisper_model else "unavailable",
+            "tts": "available" if tts_model else "unavailable",
+            "llm": "available" if response_generator else "unavailable"
+        },
+        "version": "0.1.0"
+    }
+    return jsonify(status)
 
 @app.route('/transcribe', methods=['POST'])
 def transcribe_audio():
@@ -319,7 +278,8 @@ def reset_session():
         print(traceback.format_exc())
         return jsonify({"error": error_msg}), 500
 
-if __name__ == '__main__':
+def main():
+    """Run the Flask API server."""
     api_config = config.get("api", {})
     host = api_config.get("host", "0.0.0.0")
     port = api_config.get("port", 5050)
@@ -329,3 +289,6 @@ if __name__ == '__main__':
     print(f"Data directory: {DATA_DIR}")
     print(f"Output directory: {OUTPUT_DIR}")
     app.run(host=host, port=port, debug=debug)
+
+if __name__ == '__main__':
+    main()
