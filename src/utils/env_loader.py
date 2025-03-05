@@ -1,17 +1,37 @@
-"""Utility for loading environment variables."""
+"""
+Environment variable loader utility.
+"""
 
 import os
+import logging
 import json
 from pathlib import Path
-from dotenv import load_dotenv
+
+try:
+    from dotenv import load_dotenv
+    DOTENV_AVAILABLE = True
+except ImportError:
+    DOTENV_AVAILABLE = False
+
+logger = logging.getLogger("enhanced_speech_assistant.utils.env_loader")
 
 def load_env_vars():
-    """Load environment variables from .env file."""
-    # Load .env file if it exists
-    load_dotenv()
-    
-    # Return a dictionary of environment variables
-    return dict(os.environ)
+    """
+    Load environment variables from .env file if available.
+    """
+    try:
+        if DOTENV_AVAILABLE:
+            # Try to load from .env file
+            env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
+            if os.path.exists(env_path):
+                load_dotenv(env_path)
+                logger.info(f"Loaded environment variables from {env_path}")
+            else:
+                logger.warning(f"No .env file found at {env_path}")
+        else:
+            logger.warning("python-dotenv not installed, skipping .env file loading")
+    except Exception as e:
+        logger.error(f"Error loading environment variables: {e}", exc_info=True)
 
 def load_config_with_env_override(config_path=None):
     """Load configuration from file and override with environment variables.

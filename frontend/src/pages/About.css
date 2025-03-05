@@ -1,0 +1,49 @@
+.about-page {
+  padding: 2rem 0;
+}
+
+.about-section {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-section h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.about-card {
+  margin-bottom: 2rem;
+}
+
+.about-card h2 {
+  color: var(--secondary-color);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.about-card h2:first-child {
+  margin-top: 0;
+}
+
+.about-card p {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.features-list {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.features-list li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.about-card a {
+  margin-left: 0.5rem;
+} 

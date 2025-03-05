@@ -8,25 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Cross-platform TTS implementation using pyttsx3
+- Modern React frontend with conversation history
+- Audio player with improved UI and controls
+- Llama 2 7B model integration for LLM responses
+- GPU acceleration for LLM processing
+- Cross-platform TTS implementation with caching
+- TTS preloading to reduce first-time latency
+- Performance metrics tracking and display
+- FastAPI backend with comprehensive error handling
 - Environment variable support for configuration
 - Health check endpoint in API
-- Comprehensive test suite with unit and integration tests
-- Docker and docker-compose support
-- GitHub Actions CI/CD pipeline
-- Makefile for common development tasks
-- Setup.py for proper package installation
-- Code formatting and linting configuration
-- Run script for easier application startup
-- Contributing guidelines
 
 ### Changed
+- Replaced Streamlit UI with React frontend
 - Improved project structure for better modularity
 - Enhanced error handling and logging
-- Updated documentation with more detailed instructions
+- Optimized TTS implementation for all platforms
+- Updated documentation with detailed instructions
+- Improved audio processing pipeline
 
 ### Fixed
-- MacOS TTS dependency by adding cross-platform alternative
+- Audio playback issues in the frontend
+- TTS functionality across different platforms
+- LLM response generation reliability
+- Error handling in the API endpoints
+- Performance bottlenecks in processing pipeline
 
 ## [0.1.0] - 2023-03-01
 

@@ -10,6 +10,7 @@ librosa==0.10.1
 soundfile==0.12.1
 # Using latest compatible sounddevice instead of 0.4.6
 sounddevice>=0.4.6  
+SpeechRecognition>=3.10.0  # For speech-to-text
 
 # TTS - Using Coqui TTS with proper import name
 coqui-tts>=0.21.0,<0.22.0  # Previously listed as TTS
@@ -18,9 +19,13 @@ pyttsx3>=2.90  # Cross-platform TTS
 # Model optimization
 optimum==1.16.1
 
-# Web and UI
+# Web and API
 flask==2.3.3
+flask-cors==4.0.0
 streamlit==1.29.0
+fastapi>=0.104.0  # Modern API framework
+uvicorn>=0.23.2  # ASGI server for FastAPI
+python-multipart>=0.0.6  # For handling file uploads in FastAPI
 
 # Utilities
 tqdm==4.66.1
@@ -28,3 +33,4 @@ matplotlib==3.8.2
 pandas==2.1.4
 python-dotenv>=1.0.0
 requests>=2.31.0
+pydantic>=2.4.2  # Data validation for FastAPI

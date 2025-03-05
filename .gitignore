@@ -1,56 +1,51 @@
 # Python
 __pycache__/
 *.py[cod]
-*.class
+*$py.class
 *.so
 .Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
 venv/
-
-# Project specific
-data/test_outputs/*
-!data/test_outputs/.gitkeep
-models/*
-!models/.gitkeep
-
-# Environment variables
+ENV/
+env/
 .env
+*.log
 
-# IDE files
+# Temporary files
+temp/
+uploads/
+data/test_outputs/
+data/audio_samples/
+test_audio.wav
+
+# Frontend
+frontend/node_modules/
+frontend/.vite/
+frontend/dist/
+frontend/build/
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# macOS
-.DS_Store
+# Model files (large files)
+*.bin
+*.gguf
+*.onnx
+*.pt
+*.pth
 
-# OpenAI API key
-openai_api_key.txt
-
-# Development environment
-.vscode/
-.idea/
-.pytest_cache/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Misc
 .coverage
 htmlcov/
-.mypy_cache/
-.ruff_cache/
+.pytest_cache/
