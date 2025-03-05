@@ -6,11 +6,18 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libsndfile1 \
+    ffmpeg \
+    git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
+
+# Install PyTorch with CPU support to reduce image size
+RUN pip install --no-cache-dir torch==2.0.1 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
+
+# Install other dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
