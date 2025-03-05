@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
     ffmpeg \
     git \
+    portaudio19-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -20,11 +21,14 @@ RUN pip install --no-cache-dir torch==2.0.1 torchaudio==2.0.2 --index-url https:
 # Install other dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install additional dependencies that might not be in requirements.txt
+RUN pip install --no-cache-dir streamlit flask python-multipart pyttsx3 librosa soundfile sounddevice
+
 # Copy the rest of the application
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p data/audio_samples data/test_outputs models/stt models/tts
+RUN mkdir -p data/audio_samples data/test_outputs models/stt models/tts temp uploads
 
 # Expose ports for API and UI
 EXPOSE 5050 8501

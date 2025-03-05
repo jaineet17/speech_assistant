@@ -1,6 +1,6 @@
 # Core dependencies
-torch==2.2.0
-torchaudio==2.2.0
+torch==2.0.1
+torchaudio==2.0.2
 transformers==4.39.0
 onnx==1.15.0
 onnxruntime>=1.17.0  # Use latest available version
@@ -8,8 +8,7 @@ onnxruntime>=1.17.0  # Use latest available version
 # Audio processing
 librosa==0.10.1
 soundfile==0.12.1
-# Using latest compatible sounddevice instead of 0.4.6
-sounddevice>=0.4.6  
+sounddevice>=0.4.6  # Using latest compatible sounddevice
 SpeechRecognition>=3.10.0  # For speech-to-text
 
 # TTS - Using Coqui TTS with proper import name
@@ -34,3 +33,9 @@ pandas==2.1.4
 python-dotenv>=1.0.0
 requests>=2.31.0
 pydantic>=2.4.2  # Data validation for FastAPI
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.7.0
+flake8>=6.1.0
